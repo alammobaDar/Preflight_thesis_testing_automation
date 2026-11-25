@@ -1,0 +1,8 @@
+# Installed as ppqos-iperf3-<port>.service by setup_server.sh --deploy-services. Not enabled at boot.
+[Unit]
+Description=iperf3 server for PP-QoS experiment (port @PORT@)
+After=network-online.target
+
+[Service]
+ExecStart=@IPERF3@ -s -p @PORT@ --json
+Restart=on-failure

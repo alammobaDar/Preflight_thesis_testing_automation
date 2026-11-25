@@ -1,0 +1,116 @@
+{
+  "generated_utc": "2026-11-21T07:44:20.007518+00:00",
+  "repos": {
+    "capture_engine_first_n": {
+      "path_at_manifest_time": "/home/claude/orig/CaptureEngine_first_N_/CaptureEngine",
+      "branch": "initial_packets",
+      "head_commit": "75a8e313653ce5438d817eb04aebc72688a461c6",
+      "head_subject": "update the initial_packet version of this study",
+      "working_tree_clean": true,
+      "uncommitted_changes": [],
+      "uncommitted_diff_sha256": null,
+      "working_tree_file_sha256": {
+        "cmd/main/main.go": "acb7acddec4aafce89c25cef42e3bb4810754de17e7aef46a0574060dd215c6f",
+        "go.mod": "726db00e83649aaa2e41bd2a71c11e7558974facdd2030047e13b06cfe648e07",
+        "go.sum": "69320696dd00f69557566a3a98d8e95d3e27c4c4444ceabf1f707c15ad97b1fb",
+        "internal/ftextract/directional.go": "2b9f7d03506bbf5945e292e4e6fa245b882ba6df358f5ed19630bdc30a870a4c",
+        "internal/ftextract/feature_compiler.go": "5533dac633bd28cec18af078e7e1d7e8aa6c8d816b99a8b66b2a8b4ae8a23a58",
+        "internal/ftextract/spatial.go": "999fed1ab861642d1e1001834bf77961f9c4e57072de8961d09cc5d1c653a9a6",
+        "internal/ftextract/temporal.go": "29e3f4080474ea41391a5665a3f4ab84c581f394076b66a0a672f9b36bfddb24",
+        "internal/pkcapture/capture.go": "8c5c97a847278ed21494bc12f693f6c0ac721e008c300b58d5c309c2bf431954",
+        "internal/pkcapture/flow_id.go": "db7c87483bff5a64beb543523b39bd19706b9910366655e8198f3ab4a04e8f9b",
+        "internal/pkcapture/orchestrate.go": "7b8e560697bf8520e868cfa712601e69cd9bab463be5ef90e509e63ee0b3020b",
+        "internal/pkcapture/protocol.go": "6b75011def520dfa958f93ae83761c65b389be2b7d0bf7ecdd1348d42d8e6ded",
+        "internal/sender/sender.go": "b94cb65601324ec8ce76fe2cc7f57d817f2d98cbb0b74ec19225caf2b7bfca05",
+        "run.sh": "fa36a19c5023b9118a15d8b7189c3037195de40fd9976d8a93f8e0645bd69fea",
+        "start_gateway.sh": "6dbcb639634d6440db912b667988d5fdb5195374927d462b380ccf0ee67a6cec",
+        "start_wo_wireguard.sh": "75bdce506dd6f3e82b0edb0b82d620f2e2689ea89071e73f004384c2f355e758",
+        "stop_gateway.sh": "ca8b114b3e452788c0042d776b77bc40e59370d394c7a9a5294f405fde6974b4",
+        "stop_wo_wireguard.sh": "76b76d38a1fe8c91fb9f47ee45fffbfe63d57dd044f267f195797b3bf109953a"
+      },
+      "tracked_file_count": 17
+    },
+    "capture_engine_post_n": {
+      "path_at_manifest_time": "/home/claude/orig/CaptureEngine_Post_N_/CaptureEngine",
+      "branch": "adaptive_window",
+      "head_commit": "e8692c851a4e8921dcea2414e20102bed67b7845",
+      "head_subject": "updated the whole pipeline: changed the no. of aggregated packets from 7 to 8; after flow complete, its feature vector will be deleted; take account of the IP versions flexibility, allowing the ipv6 as well",
+      "working_tree_clean": false,
+      "uncommitted_changes": [
+        " M internal/ftextract/feature_compiler.go",
+        " M internal/pkcapture/orchestrate.go",
+        " D run.sh"
+      ],
+      "uncommitted_diff_sha256": "85e56c723b9887c9e0071e1d1ac0a52f455a055e59733816773adcc612dc28d1",
+      "working_tree_file_sha256": {
+        "cmd/main/main.go": "acb7acddec4aafce89c25cef42e3bb4810754de17e7aef46a0574060dd215c6f",
+        "go.mod": "726db00e83649aaa2e41bd2a71c11e7558974facdd2030047e13b06cfe648e07",
+        "go.sum": "69320696dd00f69557566a3a98d8e95d3e27c4c4444ceabf1f707c15ad97b1fb",
+        "internal/ftextract/directional.go": "2b9f7d03506bbf5945e292e4e6fa245b882ba6df358f5ed19630bdc30a870a4c",
+        "internal/ftextract/feature_compiler.go": "38bcbf6c449e0f59c6fa90cfd22f2f15b55190428813f12f31b6413fbdd98ee1",
+        "internal/ftextract/spatial.go": "999fed1ab861642d1e1001834bf77961f9c4e57072de8961d09cc5d1c653a9a6",
+        "internal/ftextract/temporal.go": "29e3f4080474ea41391a5665a3f4ab84c581f394076b66a0a672f9b36bfddb24",
+        "internal/pkcapture/capture.go": "43fe4bbe56a74d1ff907ccae11903370b36fc05c097a2997c9d6201e6dcd1f96",
+        "internal/pkcapture/flow_id.go": "db7c87483bff5a64beb543523b39bd19706b9910366655e8198f3ab4a04e8f9b",
+        "internal/pkcapture/orchestrate.go": "091188946a1701d85bb49cdbfb93eb0f2962648ca7d0fb5afa2ae2a000be2757",
+        "internal/pkcapture/protocol.go": "f5c6509752fcdc36c83d049fec493bc01260139c1a450e96e5d285a0b038b532",
+        "internal/sender/sender.go": "b94cb65601324ec8ce76fe2cc7f57d817f2d98cbb0b74ec19225caf2b7bfca05",
+        "start_gateway.sh": "6dbcb639634d6440db912b667988d5fdb5195374927d462b380ccf0ee67a6cec",
+        "start_wo_wireguard.sh": "75bdce506dd6f3e82b0edb0b82d620f2e2689ea89071e73f004384c2f355e758",
+        "stop_gateway.sh": "ca8b114b3e452788c0042d776b77bc40e59370d394c7a9a5294f405fde6974b4",
+        "stop_wo_wireguard.sh": "76b76d38a1fe8c91fb9f47ee45fffbfe63d57dd044f267f195797b3bf109953a"
+      },
+      "tracked_file_count": 17
+    },
+    "python_controller_first_n": {
+      "path_at_manifest_time": "/home/claude/orig/PythonController_First_N_/PythonController",
+      "branch": "initial_packets",
+      "head_commit": "6f565a82dce545c445515f8571f456cb543163c8",
+      "head_subject": "change the model to first-N model",
+      "working_tree_clean": false,
+      "uncommitted_changes": [
+        " D README.md",
+        " M qos_telemetry_benchmarks.csv"
+      ],
+      "uncommitted_diff_sha256": "ee6be7772591f9a16dca310c8ae86aace98d5712ae95a626fa52460e8340d45c",
+      "working_tree_file_sha256": {
+        ".gitignore": "1f5c2140486730a206fc4ece007094aca06745fd4f0330c5a6768c9b4670a7de",
+        "main.py": "5cd0e13c41afce81e361289e72a236f1585c34e08c2f516a284eed175b38c22e",
+        "qos_telemetry_benchmarks.csv": "22e984729038788efd5f9f674145fbbc0231b41ff984e0d427af928ee7649471",
+        "requirements.txt": "c71753b320e4692cace7f548a89a388325849294b0daed50f861fe0252efb2ab",
+        "src/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "src/feature_mapper.py": "bd438e3cd859844ca7d449fad5c881252e13a7251a73fa3893d2832d26434d7d",
+        "src/predictor.py": "249474acc916339ba41ba83f6480c7af661251dd43eca3783736c81195fc2c45",
+        "src/qos_manager.py": "db590a3ca81b6e17ef4b4ebfe126e106a8091c968d423fb6dfaf363e48470b76",
+        "src/receiver.py": "af7369f9c3609eec9ce76452b46da63a320208e19e6506951680ed0e58427f54"
+      },
+      "tracked_file_count": 11
+    },
+    "python_controller_post_n": {
+      "path_at_manifest_time": "/home/claude/orig/PythonController_Post_N_/PythonController",
+      "branch": "adaptive_window",
+      "head_commit": "b49fec19efa3aa0a4350bb3e679d4e4f5d6d4ec4",
+      "head_subject": "updated the model and cconfigure the mapper and the preditor. established logging of the pipeline latency to determine the processing speed of the whole project",
+      "working_tree_clean": false,
+      "uncommitted_changes": [
+        " D README.md",
+        " M qos_telemetry_benchmarks.csv"
+      ],
+      "uncommitted_diff_sha256": "ee6be7772591f9a16dca310c8ae86aace98d5712ae95a626fa52460e8340d45c",
+      "working_tree_file_sha256": {
+        ".gitignore": "1f5c2140486730a206fc4ece007094aca06745fd4f0330c5a6768c9b4670a7de",
+        "main.py": "5cd0e13c41afce81e361289e72a236f1585c34e08c2f516a284eed175b38c22e",
+        "qos_telemetry_benchmarks.csv": "22e984729038788efd5f9f674145fbbc0231b41ff984e0d427af928ee7649471",
+        "requirements.txt": "c71753b320e4692cace7f548a89a388325849294b0daed50f861fe0252efb2ab",
+        "src/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "src/feature_mapper.py": "bd438e3cd859844ca7d449fad5c881252e13a7251a73fa3893d2832d26434d7d",
+        "src/predictor.py": "249474acc916339ba41ba83f6480c7af661251dd43eca3783736c81195fc2c45",
+        "src/qos_manager.py": "db590a3ca81b6e17ef4b4ebfe126e106a8091c968d423fb6dfaf363e48470b76",
+        "src/receiver.py": "af7369f9c3609eec9ce76452b46da63a320208e19e6506951680ed0e58427f54"
+      },
+      "tracked_file_count": 11
+    }
+  },
+  "patch_hashes": {},
+  "note": "patch_hashes is filled when patches are added to patches/"
+}

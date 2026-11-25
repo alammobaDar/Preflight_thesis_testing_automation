@@ -1,0 +1,19 @@
+# Fill from MEASURED results (docs/CALIBRATION.md). Nothing here is measured yet.
+# Do not claim a 20 Mbit/s bottleneck from config alone.
+schema_version: 1
+measured_on: null
+unshaped:
+  upload_mbit:   {wan_direct: null, via_wireguard: null}
+  download_mbit: {wan_direct: null, via_wireguard: null}
+tbf:
+  rate_mbit: null
+  achieved_upload_mbit: null
+  achieved_download_mbit: null
+  queue_forms_at: null           # A: "tbf". B-D: must be "htb" (verify with backlog counters)
+htb:
+  root_mbit: null
+  wireguard_overhead_accounted: null
+  class_check: {realtime_latency_under_contention_ms: null, guarantees_met: null, ceilings_respected: null, priorities_effective: null}
+wireguard: {mtu: null, rtt_ms_vs_direct: null, goodput_mbit_vs_direct: null}
+final_qdisc_config_snapshot: null   # path to saved `tc -s qdisc/class show` output
+notes: null

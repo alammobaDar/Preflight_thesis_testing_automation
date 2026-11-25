@@ -1,0 +1,21 @@
+# Trial validity rules. Structural rules are fixed now; numeric thresholds stay null until
+# real-path calibration (Phase 5/6). A null threshold = rule not armed; the validator must
+# refuse to declare trials VALID for the real experiment while any is null.
+schema_version: 1
+structural:                                   # each maps to a reason code on invalid trials
+  require_all_workloads_started: true         # WORKLOAD_START_FAILED
+  require_workload_exit_ok: true              # WORKLOAD_EXIT_ERROR
+  require_controller_alive_whole_trial: true  # CONTROLLER_DIED
+  require_engine_alive_whole_trial: true      # ENGINE_DIED
+  require_expected_qdisc_layout: true         # QDISC_MISMATCH
+  require_stale_state_clean_at_start: true    # STALE_STATE
+  require_logs_collected: [client, gateway, server]   # LOG_COLLECTION_FAILED
+  require_clock_offset_within_max: true       # CLOCK_OFFSET
+  require_wireguard_state_matches_scenario: true      # WG_STATE_MISMATCH
+thresholds:                                   # set from calibration; DO NOT guess
+  min_bulk_goodput_fraction_of_bottleneck: null
+  min_reference_rtt_samples: null
+  max_reference_rtt_cv: null
+  max_libpcap_ps_drop_fraction: null
+  max_unexpected_background_flow_fraction: null
+  min_streaming_bytes: null

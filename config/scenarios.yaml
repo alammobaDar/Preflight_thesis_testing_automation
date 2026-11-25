@@ -1,0 +1,63 @@
+# Per-scenario definitions. B and C/D use DIFFERENT model artifacts and engine variants.
+schema_version: 1
+scenarios:
+  A:
+    label: "Unmanaged baseline"
+    classifier_enabled: false
+    observation_strategy: null
+    n_packets: null
+    engine_variant: null
+    controller_variant: null
+    model_key: null
+    wireguard: true
+    target: wireguard_address
+    qdisc:
+      lan_egress: {type: tbf, rate_key: "qos.scenario_a_effective_rate_mbit"}
+      wg_egress:  {type: none}
+      wan_egress: {type: tbf, rate_key: "qos.scenario_a_effective_rate_mbit"}
+    classification_metrics: false
+  B:
+    label: "First-N literal packets (incl. handshake)"
+    classifier_enabled: true
+    observation_strategy: initial_packets
+    n_packets: 7
+    engine_variant: capture_engine_first_n
+    controller_variant: python_controller_first_n
+    model_key: first_n
+    wireguard: true
+    target: wireguard_address
+    qdisc:
+      lan_egress: {type: htb_sfq}
+      wg_egress:  {type: htb_sfq}
+      wan_egress: {type: tbf, rate_key: "qos.bottleneck_up_mbit"}
+    classification_metrics: true
+  C:
+    label: "First-N eligible post-establishment packets, WireGuard on"
+    classifier_enabled: true
+    observation_strategy: adaptive_window
+    n_packets: 8
+    engine_variant: capture_engine_post_n
+    controller_variant: python_controller_post_n
+    model_key: post_n
+    wireguard: true
+    target: wireguard_address
+    qdisc:
+      lan_egress: {type: htb_sfq}
+      wg_egress:  {type: htb_sfq}
+      wan_egress: {type: tbf, rate_key: "qos.bottleneck_up_mbit"}
+    classification_metrics: true
+  D:
+    label: "First-N eligible post-establishment packets, WireGuard off"
+    classifier_enabled: true
+    observation_strategy: adaptive_window
+    n_packets: 8
+    engine_variant: capture_engine_post_n
+    controller_variant: python_controller_post_n
+    model_key: post_n
+    wireguard: false
+    target: public_address
+    qdisc:
+      lan_egress: {type: htb_sfq}
+      wg_egress:  {type: none}
+      wan_egress: {type: htb_sfq}
+    classification_metrics: true

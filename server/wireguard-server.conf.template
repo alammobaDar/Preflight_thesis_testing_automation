@@ -1,0 +1,11 @@
+# TEMPLATE -- fill every <...> from the real EC2/WireGuard plan. No keys are stored in this repo.
+# Install as /etc/wireguard/<iface>.conf (mode 600). The private key lives in a root-only file.
+[Interface]
+Address = <server_wireguard_address/prefix>
+ListenPort = <listen_port>
+PostUp = wg set %i private-key /etc/wireguard/<server_private_key_file>
+MTU = <mtu_after_path_mtu_measurement>
+
+[Peer]
+PublicKey = <gateway_public_key>
+AllowedIPs = <gateway_tunnel_address/32>

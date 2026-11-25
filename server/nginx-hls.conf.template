@@ -1,0 +1,23 @@
+# Rendered by scripts/setup_server.sh --deploy-services. Placeholders: @SERVER_NAME@ @TLS_CERT@ @TLS_KEY@ @HLS_ROOT@
+# Fixed single-variant HLS over HTTPS/TCP. Not adaptive, not HTTP/3/QUIC.
+log_format ppqos_hls '$msec $remote_addr "$request" $status $bytes_sent $request_time $connection $connection_requests';
+
+server {
+    listen 443 ssl;
+    server_name @SERVER_NAME@;
+    ssl_certificate     @TLS_CERT@;
+    ssl_certificate_key @TLS_KEY@;
+    ssl_protocols TLSv1.2 TLSv1.3;
+
+    access_log /var/log/nginx/ppqos_hls_access.log ppqos_hls;   # used to correlate HLS flows (ground truth)
+    error_log  /var/log/nginx/ppqos_hls_error.log warn;
+
+    location /hls/ {
+        root @HLS_ROOT@;                  # playlist at <HLS_ROOT>/hls/index.m3u8
+        types { application/vnd.apple.mpegurl m3u8; video/mp2t ts; video/iso.segment m4s; video/mp4 mp4; }
+        add_header Cache-Control "no-store";
+        tcp_nodelay on;
+        sendfile on;
+    }
+    location / { return 404; }
+}

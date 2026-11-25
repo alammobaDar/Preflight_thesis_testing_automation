@@ -1,0 +1,13 @@
+# TEMPLATE for the gateway (WireGuard client). Fill from the real plan; never commit keys.
+# Install as /etc/wireguard/wg0.conf (mode 600). Do NOT use AllowedIPs=0.0.0.0/0 unless that is the
+# deliberate design: it would redirect the gateway's own SSH/management traffic into the tunnel.
+[Interface]
+Address = <gateway_tunnel_address/prefix>
+PostUp = wg set %i private-key <path_to_gateway_private_key_file>
+MTU = <mtu_after_path_mtu_measurement>
+
+[Peer]
+PublicKey = <server_public_key>
+Endpoint = <ec2_public_address:listen_port>
+AllowedIPs = <value_from_plan>
+PersistentKeepalive = <seconds_or_remove>

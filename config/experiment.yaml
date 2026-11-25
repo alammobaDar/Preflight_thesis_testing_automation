@@ -1,0 +1,259 @@
+# Experiment configuration.
+# `null` = genuinely unknown — fill in as you gather the information.
+# Preflight REFUSES real runs while any required value is null.
+# Never put passwords, key contents, or passphrases here — only PATHS to key files.
+schema_version: 1
+
+experiment:
+  name: "pp-qos-etc-testbed"
+  results_dir: "results"
+  valid_trials_per_scenario: 15
+  max_attempts_per_scenario: null   # FILL IN: integer >= 15. Caps total attempts so a broken setup
+                                   # cannot loop forever. Suggested starting value: 25-30.
+  scenario_order: [A, B, C, D]
+
+timing:                              # all values in seconds
+  reference_s: 15
+  active_s: 75
+  cooldown_s: 30
+  controller_to_engine_delay_s: 2
+  workload_start_timeout_s: 10
+  teardown_timeout_s: 15
+
+clock_sync:
+  method: chrony
+  max_offset_ms: 50                  # configurable; set from calibration
+
+# ---------------------------------------------------------------------------
+# TOPOLOGY
+#   Client  = your groupmate's laptop (runs iperf3, cvlc, results store)
+#   Gateway = YOUR laptop (EndeavourOS) — runs capture engine + controller,
+#             shares internet via hotspot, applies QoS qdiscs
+#   Server  = AWS EC2 Singapore (iperf3 server, nginx HLS origin, WireGuard exit)
+# ---------------------------------------------------------------------------
+
+client:                              # Device 1: groupmate's laptop
+  os_id: null                        # FILL IN: Linux distro id from /etc/os-release on your groupmate's laptop.
+                                   # e.g. "endeavouros", "ubuntu", "arch", "fedora".
+                                   # Run on their laptop: grep ^ID= /etc/os-release
+                                   # setup_client.sh auto-detects this; set here for documentation.
+  package_manager: null              # FILL IN: derived from os_id automatically by setup_client.sh, but you can
+                                   # set it explicitly if needed. "pacman" for Arch/EndeavourOS, "apt" for
+                                   # Ubuntu/Debian, "dnf" for Fedora.
+  ssh_key_path: null                 # FILL IN: absolute path ON THE CLIENT LAPTOP to the private key used to SSH
+                                   # into the gateway (your laptop) and EC2.
+                                   #
+                                   # HOW TO GET THIS KEY:
+                                   # 1. On your groupmate's laptop, run: ls ~/.ssh/
+                                   # 2. If id_ed25519 or id_rsa exists, they already have a key.
+                                   #    The path would be: /home/<username>/.ssh/id_ed25519
+                                   # 3. If no key exists, generate one:
+                                   #    ssh-keygen -t ed25519 -C "ppqos-experiment"
+                                   #    (press Enter for all prompts to use defaults and no passphrase)
+                                   # 4. Then install the PUBLIC key on the gateway (your laptop):
+                                   #    ssh-copy-id -i ~/.ssh/id_ed25519.pub <your_username>@<gateway_ip>
+                                   # 5. And on EC2:
+                                   #    ssh-copy-id -i ~/.ssh/id_ed25519.pub <ec2_user>@<ec2_ip>
+                                   #    (or add it via the AWS console if the instance is new)
+                                   # 6. Set this field to: /home/<groupmate_username>/.ssh/id_ed25519
+  workload_bind_iface: null          # FILL IN: Wi-Fi interface on the CLIENT laptop that joins your hotspot.
+                                   # On the client laptop while connected to the hotspot, run: ip link
+                                   # Look for the wireless interface (wlan0, wlp3s0, wlp2s0, etc.)
+                                   # Confirm it has an IP in 10.42.0.0/24 with:
+                                   # ip addr show <interface_name>
+  expected_client_ip: null           # FILL IN: IP address the client laptop gets from your hotspot DHCP.
+                                   # Run on the client: ip addr show <workload_bind_iface>
+                                   # e.g. 10.42.0.100. Must be inside gateway.lan_subnet (10.42.0.0/24).
+
+gateway:                             # Device 2: YOUR laptop (EndeavourOS) — the system under test
+  os_id: "endeavouros"               # confirmed: your laptop runs EndeavourOS
+  package_manager: "pacman"          # confirmed: EndeavourOS uses pacman
+  host: null                         # FILL IN: IP address the CLIENT uses to SSH into YOUR laptop for management.
+                                   # This is your laptop's IP on whichever interface the client reaches you through.
+                                   # If the client connects via your hotspot: use gateway.lan_address (10.42.0.1).
+                                   # If you have a separate wired/management interface: use that IP instead.
+                                   # Find your IPs with: ip addr show
+  ssh_user: null                     # FILL IN: your Linux username on your laptop.
+                                   # Run: whoami
+  ssh_port: 22                       # Change only if your laptop's SSH listens on a non-standard port.
+                                   # Check with: sudo ss -tlnp | grep sshd
+  ssh_key_path: null                 # FILL IN: path ON THE CLIENT LAPTOP to the private key for SSHing into
+                                   # YOUR laptop (the gateway). Usually the same as client.ssh_key_path.
+                                   # e.g. /home/<groupmate_username>/.ssh/id_ed25519
+                                   # Make sure your laptop has the public key in ~/.ssh/authorized_keys.
+                                   # If not, on YOUR laptop run:
+                                   # mkdir -p ~/.ssh && nano ~/.ssh/authorized_keys
+                                   # and paste in the client's public key (contents of their id_ed25519.pub).
+  management_path: null              # FILL IN: "separate" if the client SSHes into your laptop through a
+                                   # different interface than the hotspot (e.g. a wired Ethernet connection
+                                   # between the two laptops), OR "shared" if management SSH goes through
+                                   # the same hotspot Wi-Fi that workload traffic uses.
+                                   # Most likely "shared" in your setup.
+  lan_iface: "wlan0"                 # (DRAFT) the Wi-Fi interface on YOUR laptop that broadcasts the hotspot.
+                                   # Verify with: ip link   (look for the wireless interface)
+                                   # May be wlan0, wlp3s0, wlp2s0, etc.
+  lan_subnet: "10.42.0.0/24"         # (DRAFT) the subnet your hotspot hands out. Verify with:
+                                   # ip addr show <lan_iface>
+  lan_address: "10.42.0.1"           # (DRAFT) your laptop's IP on the hotspot interface (the gateway address).
+                                   # Verify with: ip addr show <lan_iface>
+  wan_iface: null                    # FILL IN: the interface on YOUR laptop that connects to the internet.
+                                   # This is CRITICAL — preflight refuses to run without it.
+                                   # Run on your laptop: ip route
+                                   # Find the line starting with "default via ... dev <X>" — X is your WAN interface.
+                                   # It could be: enp0s1, enp3s0, eth0, usb0, wlan1, etc.
+                                   # NEVER guess — always read it from the actual routing table.
+  wg_iface: "wg0"                    # (DRAFT) WireGuard interface name on your laptop.
+                                   # Verify after WireGuard is configured: ip link | grep wg
+  hotspot:
+    manage_hotspot: false            # Leave false. Start your hotspot manually before running the experiment.
+                                   # The automation does not create or stop it.
+    ssid: null                       # FILL IN (optional, documentation only): your hotspot's SSID name.
+                                   # The passphrase is NEVER stored here.
+  deploy_dir: null                   # FILL IN: directory on YOUR laptop where experiment code and binaries live.
+                                   # e.g. /opt/ppqos  or  /home/<your_username>/ppqos
+                                   # Phase 4 will deploy patched working copies here.
+  results_dir_remote: null           # FILL IN: directory on YOUR laptop where per-trial logs are written.
+                                   # e.g. /opt/ppqos/results  or  /home/<your_username>/ppqos/results
+                                   # These are rsync'd to the client laptop after each trial.
+  sudo_mode: null                    # FILL IN: check on YOUR laptop with: sudo -n true
+                                   # If that runs without asking for a password → "passwordless"
+                                   # If it asks for your password → "interactive"
+                                   # No passwords are stored here. Interactive mode means the automation
+                                   # will pause and prompt you during tc/WireGuard setup steps.
+  required_go_version: "1.26.4"      # from go.mod of both engines — do not change
+  ipc_path: "/tmp/flow_pipeline.ipc" # hardcoded in both Go engines and Python controllers — do not change
+
+server:                              # Device 3: AWS EC2 Singapore
+  os_id: null                        # FILL IN: distro id from /etc/os-release on EC2.
+                                   # SSH into EC2 and run: grep ^ID= /etc/os-release
+                                   # e.g. "ubuntu", "amzn" (Amazon Linux), "debian"
+  instance_type: null                # FILL IN: EC2 instance type, e.g. "t3.medium".
+                                   # Find in AWS console → EC2 → Instances → your instance → Instance type.
+                                   # Documentation only; does not affect the automation.
+  public_address: null               # FILL IN: EC2 public IPv4 address, e.g. 13.250.x.x.
+                                   # Find in AWS console, or SSH into EC2 and run:
+                                   # curl -s https://checkip.amazonaws.com
+                                   # This is the Scenario D traffic target (WireGuard off).
+  wireguard_address: null            # FILL IN: EC2's IP address INSIDE the WireGuard tunnel, e.g. 10.9.0.1
+                                   # This is the address you assign in the EC2 WireGuard config [Interface] Address.
+                                   # This is the Scenario A/B/C traffic target (WireGuard on).
+  ssh_host: null                     # FILL IN: hostname or IP to SSH into EC2 from your groupmate's laptop.
+                                   # Usually the same as public_address, e.g. 13.250.x.x
+  ssh_user: null                     # FILL IN: SSH username for EC2.
+                                   # "ubuntu" for Ubuntu AMI, "ec2-user" for Amazon Linux, "admin" for Debian.
+  ssh_port: 22
+  ssh_key_path: null                 # FILL IN: path ON THE CLIENT LAPTOP to the .pem or ed25519 key for EC2.
+                                   # This is the key AWS gave you when you created the EC2 instance,
+                                   # e.g. /home/<groupmate_username>/.ssh/ppqos-ec2.pem
+                                   # Must be chmod 600: chmod 600 ~/.ssh/ppqos-ec2.pem
+  results_dir_remote: null           # FILL IN: directory on EC2 where server-side logs are written per trial.
+                                   # e.g. /home/ubuntu/ppqos_results
+  iperf3_realtime_port: 5201
+  iperf3_bulk_port: 5203
+
+wireguard:
+  client_side:                       # WireGuard config on YOUR laptop (the gateway)
+    interface: "wg0"                 # (DRAFT) verify after WireGuard setup: ip link | grep wg
+    address: null                    # FILL IN: your laptop's IP inside the WireGuard tunnel, e.g. 10.9.0.2/24.
+                                   # This goes in [Interface] Address in /etc/wireguard/wg0.conf on your laptop.
+                                   # Choose any address in the tunnel subnet that is NOT the EC2's address.
+    private_key_path: null           # FILL IN: path on YOUR LAPTOP to the WireGuard private key file.
+                                   # e.g. /etc/wireguard/gateway_private.key  (must be chmod 600, owned by root)
+                                   # Generate with: wg genkey | sudo tee /etc/wireguard/gateway_private.key
+                                   # Get the public key with: sudo cat /etc/wireguard/gateway_private.key | wg pubkey
+                                   # Give that public key to whoever sets up the EC2 WireGuard server.
+  server_side:                       # WireGuard config on EC2
+    interface: null                  # FILL IN: WireGuard interface name on EC2, e.g. "wg0"
+    address: null                    # FILL IN: same as server.wireguard_address, e.g. 10.9.0.1/24
+    listen_port: null                # FILL IN: UDP port WireGuard listens on on EC2, e.g. 51820.
+                                   # Must be open in the AWS security group for your laptop's public IP.
+    public_key: null                 # FILL IN: EC2 WireGuard public key (safe to store here).
+                                   # On EC2 run: sudo wg show <iface> public-key
+  endpoint: null                     # FILL IN: EC2 public address + WireGuard port as seen by YOUR laptop,
+                                   # e.g. "13.250.x.x:51820". Goes in [Peer] Endpoint in wg0.conf.
+  allowed_ips: null                  # FILL IN: which traffic your laptop routes into the tunnel.
+                                   # Recommended: "10.9.0.1/32" (split-tunnel — only EC2 tunnel traffic).
+                                   # Avoid "0.0.0.0/0" unless intentional; it would route ALL traffic
+                                   # through EC2, including your management SSH.
+  mtu: null                          # FILL IN: after path-MTU measurement (docs/CALIBRATION.md step 5).
+                                   # Typical values: 1420-1440 for a standard 1500-byte Ethernet path.
+                                   # Quick test: ping -M do -s 1472 <ec2_public_address>
+                                   # Decrease the -s value until packets stop being fragmented.
+  persistent_keepalive_s: null       # FILL IN: set to 25. Keeps the tunnel alive through NAT.
+
+workloads:
+  realtime:                          # Client -> EC2 (upload)
+    tool: iperf3-udp
+    port: 5201
+    bitrate: "64K"
+    datagram_len_bytes: 160
+    ground_truth_class: "Real-Time-Interactive"
+  bulk:                              # Client -> EC2 (upload)
+    tool: iperf3-tcp
+    port: 5203
+    parallel_streams: 4
+    ground_truth_class: "Bulk-Transfer"
+  streaming:                         # EC2 -> Client (download), fixed single-variant HLS over HTTPS/TCP
+    tool: "cvlc"
+    port: 443
+    resolution: "1920x1080"
+    segment_s: 10
+    video_bitrate_mbit: 5
+    min_media_duration_s: 100
+    playlist_path: null              # FILL IN: URL path to the HLS playlist on the EC2 nginx server.
+                                   # Set after running scripts/prepare_hls.sh and copying output to EC2.
+                                   # e.g. /hls/index.m3u8
+    tls:
+      server_name: null              # FILL IN: hostname in the TLS certificate served by nginx on EC2.
+                                   # e.g. "ppqos.yourdomain.com" or the EC2 public DNS name.
+                                   # Must match the certificate CN/SAN exactly.
+      cert_path: null                # FILL IN: path on EC2 to the TLS certificate file.
+                                   # e.g. /etc/letsencrypt/live/ppqos.yourdomain.com/fullchain.pem
+      verify_mode: null              # FILL IN: "normal" for a trusted CA cert (Let's Encrypt etc.),
+                                   # "insecure" only for self-signed (requires justification in manuscript).
+    ground_truth_class: "Multimedia-Streaming"
+    adaptive: false                  # NOT adaptive streaming. NOT QUIC. Single variant, HTTPS/TCP only.
+  rtt_probe:                         # 100 ms ICMP+UDP probe, runs throughout trial. Confirmed by user.
+    enabled: true
+    interval_ms: 100
+    target: "scenario_target"        # resolved per scenario: wg address (A-C), public address (D)
+    confirmed_by_user: true
+
+qos:
+  bottleneck_up_mbit: 20             # nominal — MUST be verified by calibration (docs/CALIBRATION.md)
+  bottleneck_down_mbit: 20
+  tbf_latency_ms: 100
+  htb_root_fraction: 0.90
+  classes:                           # approved values; rate guarantees sum to 18 (= 20 × 0.90)
+    realtime:  {classid: "1:10", rate_mbit: 3, ceil_mbit: 4,  prio: 1}
+    streaming: {classid: "1:20", rate_mbit: 8, ceil_mbit: 18, prio: 2}
+    bulk:      {classid: "1:30", rate_mbit: 7, ceil_mbit: 18, prio: 3}
+  leaf_qdisc: sfq
+  scenario_a_effective_rate_mbit: 20 # Decision 1 final (option 3): 20 Mbit/s WAN TBF, matches original plan.
+                                     # B/C/D HTB root = 18 Mbit/s (20 × 0.90). Residual inner upload gap
+                                     # (~19.3 vs 18 Mbit/s) disclosed in manuscript experimental setup section.
+  scenario_a_rate_decision: "option3_approved"
+  calibration_file: null             # FILL IN: after calibration (docs/CALIBRATION.md), copy
+                                   # config/calibration.template.yaml → config/calibration.yaml,
+                                   # fill it in, then set this to "config/calibration.yaml".
+                                   # Real runs are refused without it.
+
+controllers:                         # traceable deployment sources; hashes in manifests/
+  capture_engine_first_n:
+    branch: "initial_packets"
+    n: 7
+    source_dir: null               # Auto-filled by Phase 4 deployment on YOUR laptop (gateway),
+                                   # e.g. /opt/ppqos/src/capture_engine_first_n
+  capture_engine_post_n:
+    branch: "adaptive_window"
+    n: 8
+    source_dir: null               # e.g. /opt/ppqos/src/capture_engine_post_n
+  python_controller_first_n:
+    branch: "initial_packets"
+    source_dir: null               # e.g. /opt/ppqos/src/python_controller_first_n
+  python_controller_post_n:
+    branch: "adaptive_window"
+    source_dir: null               # e.g. /opt/ppqos/src/python_controller_post_n
+  models_manifest: "manifests/models.manifest.json"
+  sources_manifest: "manifests/sources.manifest.json"
+  patches_dir: "patches"

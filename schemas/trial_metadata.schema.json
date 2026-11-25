@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Per-trial metadata (results/raw/<scenario>/<trial_id>/trial_metadata.json)",
+  "description": "Written once per ATTEMPT (valid or invalid). Raw logs in the same directory are immutable after collection.",
+  "type": "object",
+  "required": ["trial_id", "scenario", "attempt_index", "status", "reason_codes", "timestamps_utc",
+               "clock_offsets_ms", "config_snapshot_sha256", "model", "sources", "calibration", "files"],
+  "properties": {
+    "trial_id": {"type": "string", "description": "unique, e.g. B_attempt007_20261121T093000Z"},
+    "scenario": {"enum": ["A", "B", "C", "D"]},
+    "attempt_index": {"type": "integer", "minimum": 1},
+    "valid_trial_number": {"type": ["integer", "null"], "minimum": 1, "maximum": 15,
+                           "description": "1..15 for VALID attempts, null for invalid ones"},
+    "status": {"enum": ["valid", "invalid", "aborted"]},
+    "reason_codes": {"type": "array", "items": {"enum": [
+      "WORKLOAD_START_FAILED", "WORKLOAD_EXIT_ERROR", "CONTROLLER_DIED", "ENGINE_DIED", "QDISC_MISMATCH",
+      "STALE_STATE", "LOG_COLLECTION_FAILED", "CLOCK_OFFSET", "WG_STATE_MISMATCH", "THRESHOLD_VIOLATION",
+      "OPERATOR_ABORT", "PREFLIGHT_FAILED"]}},
+    "timestamps_utc": {"type": "object", "required": ["start", "reference_start", "active_start", "active_end", "end"]},
+    "clock_offsets_ms": {"type": "object", "required": ["client", "gateway", "server"]},
+    "config_snapshot_sha256": {"type": "string"},
+    "model": {"type": ["object", "null"], "description": "null for scenario A",
+              "properties": {"key": {"enum": ["first_n", "post_n"]}, "sha256": {"type": "string", "minLength": 64, "maxLength": 64}}},
+    "sources": {"type": "object", "description": "commit + dirty flag + patch hashes for engine and controller actually deployed"},
+    "calibration": {"type": "object", "properties": {"file": {"type": "string"}, "sha256": {"type": "string"}}},
+    "files": {"type": "object", "description": "relative path -> sha256 for every collected file (written at collection time)"}
+  }
+}

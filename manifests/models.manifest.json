@@ -1,0 +1,123 @@
+{
+  "generated_utc": "2026-11-21T07:44:20.007518+00:00",
+  "models": {
+    "first_n": {
+      "used_by_scenarios": [
+        "B"
+      ],
+      "controller_repo": "python_controller_first_n",
+      "file": "rf_model.joblib",
+      "sha256": "010d1a37af6449b9bd051d241aa38f2bf6b714b5f0058a2c4a4a9fc4e813caf4",
+      "size_bytes": 2235953,
+      "introspected": {
+        "type": "RandomForestClassifier",
+        "n_estimators": 100,
+        "classes": [
+          "Bulk-Transfer",
+          "Multimedia-Streaming",
+          "Real-Time-Interactive"
+        ],
+        "n_features_in": 23,
+        "feature_names_in": [
+          "frame_len_mean",
+          "frame_len_std",
+          "frame_len_min",
+          "frame_len_max",
+          "frame_len_cv",
+          "payload_len_mean",
+          "payload_len_std",
+          "payload_len_min",
+          "payload_len_max",
+          "payload_len_sum",
+          "payload_len_cv",
+          "duration",
+          "iat_mean",
+          "iat_std",
+          "iat_min",
+          "iat_max",
+          "iat_cv",
+          "fwd_packets",
+          "rev_packets",
+          "fwd_payload_bytes",
+          "rev_payload_bytes",
+          "dir_norm_asym_packets",
+          "dir_norm_asym_bytes"
+        ],
+        "pickled_with_sklearn_version": "1.9.1",
+        "introspection_note": "loaded with the sklearn of the machine that generated this manifest"
+      },
+      "training_provenance": {
+        "training_dataset_name": "TO_BE_COMPLETED_BY_USER",
+        "training_dataset_sha256": "TO_BE_COMPLETED_BY_USER",
+        "training_script_commit": "TO_BE_COMPLETED_BY_USER",
+        "training_date": "TO_BE_COMPLETED_BY_USER",
+        "hyperparameters": "TO_BE_COMPLETED_BY_USER",
+        "feature_set_version": "TO_BE_COMPLETED_BY_USER",
+        "validation_split": "TO_BE_COMPLETED_BY_USER",
+        "offline_macro_f1": "TO_BE_COMPLETED_BY_USER",
+        "stun_excluded_in_training_data": "TO_BE_COMPLETED_BY_USER"
+      }
+    },
+    "post_n": {
+      "used_by_scenarios": [
+        "C",
+        "D"
+      ],
+      "controller_repo": "python_controller_post_n",
+      "file": "rf_model.joblib",
+      "sha256": "bf4e3118750e5c5bb41aaed9222f65d7113e02cd8c468fe49074013b5f31ceab",
+      "size_bytes": 1299201,
+      "introspected": {
+        "type": "RandomForestClassifier",
+        "n_estimators": 100,
+        "classes": [
+          "Bulk-Transfer",
+          "Multimedia-Streaming",
+          "Real-Time-Interactive"
+        ],
+        "n_features_in": 23,
+        "feature_names_in": [
+          "frame_len_mean",
+          "frame_len_std",
+          "frame_len_min",
+          "frame_len_max",
+          "frame_len_cv",
+          "payload_len_mean",
+          "payload_len_std",
+          "payload_len_min",
+          "payload_len_max",
+          "payload_len_sum",
+          "payload_len_cv",
+          "duration",
+          "iat_mean",
+          "iat_std",
+          "iat_min",
+          "iat_max",
+          "iat_cv",
+          "fwd_packets",
+          "rev_packets",
+          "fwd_payload_bytes",
+          "rev_payload_bytes",
+          "dir_norm_asym_packets",
+          "dir_norm_asym_bytes"
+        ],
+        "pickled_with_sklearn_version": "1.9.1",
+        "introspection_note": "loaded with the sklearn of the machine that generated this manifest"
+      },
+      "training_provenance": {
+        "training_dataset_name": "TO_BE_COMPLETED_BY_USER",
+        "training_dataset_sha256": "TO_BE_COMPLETED_BY_USER",
+        "training_script_commit": "TO_BE_COMPLETED_BY_USER",
+        "training_date": "TO_BE_COMPLETED_BY_USER",
+        "hyperparameters": "TO_BE_COMPLETED_BY_USER",
+        "feature_set_version": "TO_BE_COMPLETED_BY_USER",
+        "validation_split": "TO_BE_COMPLETED_BY_USER",
+        "offline_macro_f1": "TO_BE_COMPLETED_BY_USER",
+        "stun_excluded_in_training_data": "TO_BE_COMPLETED_BY_USER"
+      }
+    }
+  },
+  "controller_variants_differ_only_in_model": true,
+  "controller_diff_excluding_model_and_telemetry_csv": [],
+  "notes": []
+}

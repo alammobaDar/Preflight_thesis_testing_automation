@@ -1,0 +1,13 @@
+# Derived from PythonController/requirements.txt (both variants identical) with ONE deliberate change:
+# scikit-learn==1.9.1 (both rf_model.joblib files record _sklearn_version 1.9.1; the repos pin 1.9.0).
+# Loading a pickle under a different sklearn version is unsupported. Review this deviation.
+joblib==1.5.3
+narwhals==2.24.0
+numpy==2.5.1
+pandas==3.0.5
+python-dateutil==2.9.0.post0
+pyzmq==27.1.0
+scikit-learn==1.9.1
+scipy==1.18.0
+six==1.17.0
+threadpoolctl==3.6.0
